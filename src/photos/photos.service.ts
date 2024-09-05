@@ -1,7 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import {
+  Injectable,
+  BadRequestException,
+  ServiceUnavailableException,
+} from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
-import { ConfigService } from "@nestjs/config";
-
 import { PixabayHit } from "interfaces/pixabay.interface";
 
 @Injectable()
@@ -11,16 +13,28 @@ export class PhotosService {
   constructor(private readonly httpService: HttpService) {}
 
   async getRandomPhotos(count: number): Promise<string[]> {
-    const response = await this.httpService
-      .get(
-        `https://pixabay.com/api/?key=${this.pixabayApiKey}&per_page=${count}`
-      )
-      .toPromise();
+    if (count <= 0) {
+      throw new BadRequestException(
+        "The number of photos must be greater than 0."
+      );
+    }
 
-    if (response && response.data && response.data.hits) {
-      return response.data.hits.map((hit: PixabayHit) => hit.webformatURL);
-    } else {
-      return [];
+    try {
+      const response = await this.httpService
+        .get(
+          `https://pixabay.com/api/?key=${this.pixabayApiKey}&per_page=${count}`
+        )
+        .toPromise();
+
+      if (response && response.data && response.data.hits) {
+        return response.data.hits.map((hit: PixabayHit) => hit.webformatURL);
+      } else {
+        return [];
+      }
+    } catch (error) {
+      throw new ServiceUnavailableException(
+        "Unable to fetch photos from Pixabay."
+      );
     }
   }
 }
