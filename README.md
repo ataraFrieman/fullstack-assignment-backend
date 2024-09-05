@@ -22,7 +22,7 @@ This is a fullstack assignment backend built with NestJS and MongoDB. It include
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/fullstack-assignment-backend.git
+   git clone https://github.com/ataraFrieman/fullstack-assignment-backend/
    ```
 
 2. Install dependencies:
